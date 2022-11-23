@@ -187,4 +187,26 @@ public class QueryDSLBasicTest {
     assertThat(teamB.get(team.name)).isEqualTo("TeamB");
     assertThat(teamB.get(member.age.avg())).isEqualTo(35);
   }
+
+  @Test
+  public void join() {
+    List<Member> result =
+        queryFactory
+            .selectFrom(member)
+            .join(member.team, team)
+            .where(team.name.eq("TeamA"))
+            .fetch();
+    assertThat(result).extracting("username").containsExactly("member1", "member2");
+  }
+
+  @Test
+  public void thetaJoin() {
+    em.persist(new Member("TeamA"));
+    em.persist(new Member("TeamB"));
+    em.persist(new Member("TeamC"));
+
+    List<Member> result =
+        queryFactory.select(member).from(member, team).where(member.username.eq(team.name)).fetch();
+    assertThat(result).extracting("username").containsExactly("TeamA", "TeamB");
+  }
 }
