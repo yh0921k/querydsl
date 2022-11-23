@@ -21,7 +21,6 @@ public class QueryDSLBasicTest {
   @Autowired EntityManager em;
   JPAQueryFactory queryFactory;
 
-
   @BeforeEach
   public void beforeEach() {
     queryFactory = new JPAQueryFactory(em);
@@ -58,6 +57,28 @@ public class QueryDSLBasicTest {
   public void startQuerydsl() {
     Member findMember =
         queryFactory.select(member).from(member).where(member.username.eq("member1")).fetchOne();
+    assertThat(findMember.getUsername()).isEqualTo("member1");
+  }
+
+  @Test
+  public void search() {
+    Member findMember =
+        queryFactory
+            .selectFrom(member)
+            .where(member.username.eq("member1").and(member.age.eq(10)))
+            .fetchOne();
+
+    assertThat(findMember.getUsername()).isEqualTo("member1");
+  }
+
+  @Test
+  public void searchAndParam() {
+    Member findMember =
+        queryFactory
+            .selectFrom(member)
+            .where(member.username.eq("member1"), member.age.eq(10))
+            .fetchOne();
+
     assertThat(findMember.getUsername()).isEqualTo("member1");
   }
 }
