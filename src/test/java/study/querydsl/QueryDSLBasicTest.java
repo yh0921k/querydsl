@@ -106,11 +106,12 @@ public class QueryDSLBasicTest {
     em.persist(new Member("member5", 100));
     em.persist(new Member("member6", 100));
 
-    List<Member> result = queryFactory
-        .selectFrom(member)
-        .where(member.age.eq(100))
-        .orderBy(member.age.desc(), member.username.asc().nullsLast())
-        .fetch();
+    List<Member> result =
+        queryFactory
+            .selectFrom(member)
+            .where(member.age.eq(100))
+            .orderBy(member.age.desc(), member.username.asc().nullsLast())
+            .fetch();
 
     Member member5 = result.get(0);
     Member member6 = result.get(1);
@@ -119,6 +120,27 @@ public class QueryDSLBasicTest {
     assertThat(member5.getUsername()).isEqualTo("member5");
     assertThat(member6.getUsername()).isEqualTo("member6");
     assertThat(memberNull.getUsername()).isNull();
+  }
 
+  @Test
+  public void paging() {
+    List<Member> result =
+        queryFactory.selectFrom(member).orderBy(member.username.desc()).offset(1).limit(2).fetch();
+    assertThat(result.size()).isEqualTo(2);
+  }
+
+  @Test
+  public void pagingWithTotal() {
+    QueryResults<Member> queryResults = queryFactory
+        .selectFrom(member)
+        .orderBy(member.username.desc())
+        .offset(1)
+        .limit(2)
+        .fetchResults();
+
+    assertThat(queryResults.getTotal()).isEqualTo(4);
+    assertThat(queryResults.getLimit()).isEqualTo(2);
+    assertThat(queryResults.getOffset()).isEqualTo(1);
+    assertThat(queryResults.getResults().size()).isEqualTo(2);
   }
 }
