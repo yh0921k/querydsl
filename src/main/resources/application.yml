@@ -15,5 +15,5 @@ spring:
     show-sql: false
 
 logging.level:
-  org.hibernate.SQL: off
+  org.hibernate.SQL: debug
 #  org.hibernate.type: trace
