@@ -209,4 +209,38 @@ public class QueryDSLBasicTest {
         queryFactory.select(member).from(member, team).where(member.username.eq(team.name)).fetch();
     assertThat(result).extracting("username").containsExactly("TeamA", "TeamB");
   }
+
+  @Test
+  public void joinOnFiltering() {
+    List<Tuple> result =
+        queryFactory
+            .select(member, team)
+            .from(member)
+            .leftJoin(member.team, team)
+            .on(team.name.eq("TeamA"))
+            .fetch();
+
+    for (Tuple tuple : result) {
+      System.out.println("tuple = " + tuple);
+    }
+  }
+
+  @Test
+  public void joinOnNoRelation() {
+    em.persist(new Member("TeamA"));
+    em.persist(new Member("TeamB"));
+    em.persist(new Member("TeamC"));
+
+    List<Tuple> result =
+        queryFactory
+            .select(member, team)
+            .from(member)
+            .leftJoin(team)
+            .on(member.username.eq(team.name))
+            .fetch();
+
+    for (Tuple tuple : result) {
+      System.out.println("tuple = " + tuple);
+    }
+  }
 }
