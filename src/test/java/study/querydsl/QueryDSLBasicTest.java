@@ -15,8 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Commit;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.querydsl.dto.MemberDto;
 import study.querydsl.dto.QMemberDto;
@@ -610,6 +608,35 @@ public class QueryDSLBasicTest {
     List<Member> result = queryFactory.selectFrom(member).fetch();
     for (Member findMember : result) {
       System.out.println("findMember = " + findMember);
+    }
+  }
+
+  @Test
+  public void sqlFunction() {
+    List<String> result =
+        queryFactory
+            .select(
+                Expressions.stringTemplate(
+                    "function('replace', {0}, {1}, {2})", member.username, "member", "M"))
+            .from(member)
+            .fetch();
+
+    for (String s : result) {
+      System.out.println("s = " + s);
+    }
+  }
+
+  @Test
+  public void sqlFunction2() {
+    List<String> result =
+        queryFactory
+            .select(member.username)
+            .from(member)
+            .where(member.username.eq(member.username.lower()))
+            .fetch();
+
+    for (String s : result) {
+      System.out.println("s = " + s);
     }
   }
 }
