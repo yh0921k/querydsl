@@ -1,3 +1,14 @@
 spring:
   profiles:
     active: test
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: false
+    show-sql: false
+
+logging.level:
+  org.hibernate.SQL: debug
